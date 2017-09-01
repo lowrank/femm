@@ -43,5 +43,17 @@ $(FunctionWrapperOut)/FunctionSpaceWrapper.mexa64: $(FunctionWrapper)/FunctionSp
 	$(CXX) $(MATLAB_LINKS) -o $@ $< $(CXX_LIBS) && rm $(FunctionWrapper)/FunctionSpace.o
 ###########################################################
 
+###########################################################
+ModeWrapper = src/ModeWrapper
+ModeWrapperOut = class/QuadMode/private
+
+$(ModeWrapper)/ModeWrapper.o: $(ModeWrapper)/tModeInfo.cpp $(ModeWrapper)/tModeInfo.h
+	$(CXX) -c $(CXX_INCLUDE) $(CXX_FLAGS) $< -o $@
 	
-all:$(TriangleWrapperOut)/TriangleWrapper.mexa64 $(FunctionWrapperOut)/FunctionSpaceWrapper.mexa64
+$(ModeWrapperOut)/ModeWrapper.mexa64: $(ModeWrapper)/ModeWrapper.o
+	$(CXX) $(MATLAB_LINKS) -o $@ $< $(CXX_LIBS) -lquadmath && rm  $(ModeWrapper)/ModeWrapper.o
+
+###########################################################
+
+	
+all:$(TriangleWrapperOut)/TriangleWrapper.mexa64 $(FunctionWrapperOut)/FunctionSpaceWrapper.mexa64 $(ModeWrapperOut)/ModeWrapper.mexa64

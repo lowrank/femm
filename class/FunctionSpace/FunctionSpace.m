@@ -23,7 +23,7 @@ classdef FunctionSpace < handle
         end
 
         function delete(this)
-            logger('*Red', sprintf('  Destroying FunctionSpace at %d.\n', this.address));
+            logger('*Red', sprintf('    Destroy FunctionSpace at %d.\n', this.address));
             FunctionSpaceWrapper('delete', this.address);
         end
         
