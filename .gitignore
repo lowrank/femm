@@ -87,3 +87,6 @@ dkms.conf
 *.mexa64
 
 
+.cproject
+.project
+.settings/
