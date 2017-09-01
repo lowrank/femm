@@ -21,11 +21,10 @@ mesh = mesh.refine_tri('q34.0a0.00125');
 
 %% Function Space
 
-f = @(x)(sin(2*pi*x(1,:).*sin(2*pi*x(2,:))));
+f = @(x)(sin(2*pi*x(:,1).*sin(2*pi*x(:, 2))));
 V = FunctionSpace(mesh, 2);
 u = Function(V, f); % allocation.
-v = Function(V);
 
-trisurf(V.elems(1:3, :)', V.nodes(1,:), V.nodes(2,:), v, 'EdgeColor', 'none');shading interp;axis equal;view(2);
+trisurf(V.elems(1:3, :)', V.nodes(1,:), V.nodes(2,:), u.data, 'EdgeColor', 'none');shading interp;axis equal;view(2);
 
 

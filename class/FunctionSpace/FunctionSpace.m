@@ -2,7 +2,7 @@ classdef FunctionSpace < handle
 
     properties
         address
-        
+        deg
         nodes
         elems
         edges
@@ -13,6 +13,7 @@ classdef FunctionSpace < handle
     methods
         function this = FunctionSpace(tm, deg)
             this.address = FunctionSpaceWrapper('new');   
+            this.deg     = deg;
             % get all information from triangle mesh.
             [p, s, t, e, n] = tm.getData_tri();
             % build up function space.
