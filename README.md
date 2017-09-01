@@ -6,5 +6,8 @@
 - [ ] Bilinear Form.
 - [ ] Linear Form.
 
+# Pre-build
+- ``apt-get install libtriangle-dev``
+
 # Build
-``make`` 
+- ``make`` 
