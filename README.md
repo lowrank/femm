@@ -3,6 +3,7 @@
 - [x] Mesh for 2D (triangle),
 - [x] FunctionSpace class.
 - [x] Function method.
+- [x] Quadrature modes.
 - [ ] Bilinear Form.
 - [ ] Linear Form.
 

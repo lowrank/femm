@@ -56,4 +56,14 @@ $(ModeWrapperOut)/ModeWrapper.mexa64: $(ModeWrapper)/ModeWrapper.o
 ###########################################################
 
 	
-all:$(TriangleWrapperOut)/TriangleWrapper.mexa64 $(FunctionWrapperOut)/FunctionSpaceWrapper.mexa64 $(ModeWrapperOut)/ModeWrapper.mexa64
+all:$(TriangleWrapperOut)/TriangleWrapper.mexa64 \
+$(FunctionWrapperOut)/FunctionSpaceWrapper.mexa64 \
+$(ModeWrapperOut)/ModeWrapper.mexa64
+
+
+clean:
+	rm -f $(TriangleWrapperOut)/TriangleWrapper.mexa64
+	rm -f $(FunctionWrapperOut)/FunctionSpaceWrapper.mexa64
+	rm -f $(ModeWrapperOut)/ModeWrapper.mexa64
+
+
