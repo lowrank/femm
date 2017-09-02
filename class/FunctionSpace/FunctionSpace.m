@@ -1,13 +1,20 @@
 classdef FunctionSpace < handle
-
-    properties
+    
+    properties (Access = private)
         address
+    end
+    
+
+    properties (Access = public)
         deg
         nodes
         elems
         edges
-        edgeIds;
-        neighbors;
+        edgeIds
+        neighbors
+        
+        reference % struct to be done.
+        jacobian  % Jacobian matrix for each element.
     end
 
     methods
