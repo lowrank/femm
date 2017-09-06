@@ -24,8 +24,8 @@ CXX_LIBS = -Wl,--no-undefined -Wl,-rpath-link,"$(MATLAB_ROOT)bin/glnxa64" \
 		   -L$(MATLAB_ROOT)bin/glnxa64 -lmx -lmex -lmat -lm -fopenmp 
 		   
 		   
-		   
-###########################################################		   
+
+########################## Mesh ###########################		   
 TriangleWrapper    = src/MeshWrapper/TriangleWrapper
 TriangleWrapperOut = class/TriangleMesh/private
 
@@ -36,7 +36,7 @@ $(TriangleWrapperOut)/TriangleWrapper.mexa64: $(TriangleWrapper)/tTriangleInfo.o
 	$(CXX) $(MATLAB_LINKS) -o $@ $< $(CXX_LIBS) -ltriangle && rm $(TriangleWrapper)/tTriangleInfo.o
 ###########################################################	
 	
-###########################################################
+####################### Function Space ####################
 FunctionWrapper = src/FunctionSpace
 FunctionWrapperOut = class/FunctionSpace/private
 
@@ -47,7 +47,7 @@ $(FunctionWrapperOut)/FunctionSpaceWrapper.mexa64: $(FunctionWrapper)/FunctionSp
 	$(CXX) $(MATLAB_LINKS) -o $@ $< $(CXX_LIBS) && rm $(FunctionWrapper)/FunctionSpace.o
 ###########################################################
 
-###########################################################
+########################### Mode ##########################
 ModeWrapper = src/ModeWrapper
 ModeWrapperOut = class/QuadMode/private
 
@@ -58,6 +58,8 @@ $(ModeWrapperOut)/ModeWrapper.mexa64: $(ModeWrapper)/ModeWrapper.o
 	$(CXX) $(MATLAB_LINKS) -o $@ $< $(CXX_LIBS) -lquadmath && rm  $(ModeWrapper)/ModeWrapper.o
 
 ###########################################################
+
+######################## Metis ############################
 MetisWrapper = src/MetisWrapper
 MetisWrapperOut = utility/MeshPartition
 
@@ -66,20 +68,34 @@ $(MetisWrapper)/MetisWrapper.o: $(MetisWrapper)/metismex.c
 	
 $(MetisWrapperOut)/MetisPartition.mexa64: $(MetisWrapper)/MetisWrapper.o
 	$(CXX) $(MATLAB_LINKS) -o $@ $< $(CXX_LIBS) -lmetis && rm  $(MetisWrapper)/MetisWrapper.o
+###########################################################
+
+##################### Form ################################
+FormWrapper = src/FormWrapper
+FormWrapperOut = class/FormBuilder/private
+
+
+$(FormWrapper)/FormWrapper.o: $(FormWrapper)/FormWrapper.cpp
+	$(CXX) -c $(CXX_INCLUDE) $(CXX_FLAGS) $< -o $@
 	
-	
+$(FormWrapperOut)/FormBuilder.mexa64: $(FormWrapper)/FormWrapper.o
+	$(CXX) $(MATLAB_LINKS) -o $@ $< $(CXX_LIBS) && rm  $(FormWrapper)/FormWrapper.o
+
 ###########################################################
 
 	
 all:$(TriangleWrapperOut)/TriangleWrapper.mexa64 \
 $(FunctionWrapperOut)/FunctionSpaceWrapper.mexa64 \
 $(ModeWrapperOut)/ModeWrapper.mexa64 \
-$(MetisWrapperOut)/MetisPartition.mexa64
+$(MetisWrapperOut)/MetisPartition.mexa64 \
+$(FormWrapperOut)/FormBuilder.mexa64
 
 
 clean:
 	rm -f $(TriangleWrapperOut)/TriangleWrapper.mexa64
 	rm -f $(FunctionWrapperOut)/FunctionSpaceWrapper.mexa64
 	rm -f $(ModeWrapperOut)/ModeWrapper.mexa64
+	rm -f $(MetisWrapperOut)/MetisPartition.mexa64
+	rm -f $(FormWrapperOut)/FormBuilder.mexa64
 
 

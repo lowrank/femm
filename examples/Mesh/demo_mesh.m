@@ -11,7 +11,7 @@ mesh = mesh.refine_tri('q34.0a0.0000125');
 mesh.getInfo_tri();
 
 C = mesh.connectivity();
-[pts,seg, elem, ~, nei] = mesh.getData_tri();
+[pts,~, elem, ~, ~] = mesh.getData_tri();
 map = MetisPartition('PartGraphRecursive', C, 4);
 
 figure; hold on;
