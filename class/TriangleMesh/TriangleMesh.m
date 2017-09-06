@@ -54,6 +54,16 @@ classdef TriangleMesh < handle
             conn = sparse(I,J,V);
         end
         
+        function partition = part(this, K) 
+            C = this.connectivity();
+            map = MetisPartition('PartGraphRecursive', C, K);
+            partition = cell(K ,1);
+            ids = 1:size(C, 1);
+            for cid = 1:K
+                partition{cid} = ids(map == (cid-1));
+            end
+        end
+        
 
     end
     

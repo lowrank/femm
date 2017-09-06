@@ -22,17 +22,16 @@ mesh = mesh.refine_tri('q34.0a0.00125');
 % mesh.getInfo_tri();
 
 
-
-
-C = mesh.connectivity();
 [pts,~, elem, ~, ~] = mesh.getData_tri();
-map = MetisPartition('PartGraphRecursive', C, 4);
+
+K = 4;
+partition = mesh.part(K);
 
 figure(1); hold on;
-for val = 0:3
-v = elem(:, map==val);
+for val = 0:(K-1)
+v = elem(:, partition{val+1});
 p = pts(:, unique(v));
-scatter(p(1,:), p(2,:));
+scatter(p(1,:), p(2,:), 2 * val + 1);
 end
 hold off;
 

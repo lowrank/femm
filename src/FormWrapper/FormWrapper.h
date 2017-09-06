@@ -12,13 +12,12 @@
 #include "mexplus.h"
 #include "common.h"
 
+using namespace std;
 
 class FormWrapper {
 public:
 	FormWrapper();
 	virtual ~FormWrapper();
-
-	int qdeg;
 
 	/*
 	 * 2D and 1D references,

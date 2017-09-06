@@ -12,10 +12,11 @@ classdef FunctionSpace < handle
         edges
         edgeIds
         neighbors
+        partition
     end
 
     methods
-        function this = FunctionSpace(tm, deg)
+        function this = FunctionSpace(tm, deg, Kpart)
             this.address = FunctionSpaceWrapper('new');   
             this.deg     = deg;
             % get all information from triangle mesh.
@@ -25,6 +26,12 @@ classdef FunctionSpace < handle
             build(this, p, s, t, e, n, deg);
             [this.nodes, this.elems, this.edges, this.edgeIds, this.neighbors] = getData(this);
             
+            if (nargin < 3) 
+                this.partition = {1:size(t, 2)}; % 1 part only.
+            else
+                assert(Kpart >= 2);
+                this.partition = tm.part(Kpart);
+            end
         end
 
         function delete(this)

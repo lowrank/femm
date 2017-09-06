@@ -1,5 +1,7 @@
 classdef FormBuilder < handle
-    
+    properties (Access = private)
+        part
+    end
     properties (Access = public)
         address
         r
@@ -13,6 +15,8 @@ classdef FormBuilder < handle
     methods 
         function this = FormBuilder(fs, qdeg)
             this.address = FormWrapper('new');
+            
+            % 2d quadrature
             qm = QuadMode(2);
             [x_, y_, this.w] = qm.get_vr_quad(qdeg); 
             q = [x_, y_]';
@@ -23,24 +27,26 @@ classdef FormBuilder < handle
             reftm.set_facets_tri([0 1 1 2 2 0]');
             reftm = reftm.build_tri();
             reftm = reftm.refine_tri('q34a1');
-            
             [refp, refs, reft, refe, refn] = reftm.getData_tri();
-            
             reffs = FunctionSpace(reftm, fs.deg);
             reffs.build(refp, refs, reft, refe, refn, fs.deg);
-            
             p = reffs.nodes;
+            
+            % get ref2d
             [this.r, this.rx, this.ry] = ref2d(this, p, q);
             
+            % 1d quadrature
             qm = QuadMode(1);
-            
             pe = linspace(-1, 1, fs.deg + 1);
             pe = [pe(1), pe(end), pe(2:end-1)];
-            
             [x_, this.we] =  qm.get_vr_quad(qdeg);
             qe = x_';
             
+            % get ref1d
             [this.re] = ref1d(this, pe, qe);
+            
+            % get partition.
+            this.part = fs.partition;
             
             reffs.delete();
             reftm.delete();
