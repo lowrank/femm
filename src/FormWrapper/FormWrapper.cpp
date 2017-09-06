@@ -85,7 +85,7 @@ void FormWrapper::Reference(M_Ptr &R, M_Ptr &Rx, M_Ptr &Ry, M_Ptr points, M_Ptr 
 	}
 
 	M_Ptr RHS_f[] = {T, F};
-	mexCallMATLAB(1, &F, 2, RHS_f, "mldivide");
+	mexCallMATLAB(1, &R, 2, RHS_f, "mldivide");
 
 	M_Ptr RHS_x[] = {T, Fx};
 	mexCallMATLAB(1, &Rx, 2, RHS_x, "mldivide");

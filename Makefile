@@ -78,7 +78,7 @@ FormWrapperOut = class/FormBuilder/private
 $(FormWrapper)/FormWrapper.o: $(FormWrapper)/FormWrapper.cpp
 	$(CXX) -c $(CXX_INCLUDE) $(CXX_FLAGS) $< -o $@
 	
-$(FormWrapperOut)/FormBuilder.mexa64: $(FormWrapper)/FormWrapper.o
+$(FormWrapperOut)/FormWrapper.mexa64: $(FormWrapper)/FormWrapper.o
 	$(CXX) $(MATLAB_LINKS) -o $@ $< $(CXX_LIBS) && rm  $(FormWrapper)/FormWrapper.o
 
 ###########################################################
@@ -88,7 +88,7 @@ all:$(TriangleWrapperOut)/TriangleWrapper.mexa64 \
 $(FunctionWrapperOut)/FunctionSpaceWrapper.mexa64 \
 $(ModeWrapperOut)/ModeWrapper.mexa64 \
 $(MetisWrapperOut)/MetisPartition.mexa64 \
-$(FormWrapperOut)/FormBuilder.mexa64
+$(FormWrapperOut)/FormWrapper.mexa64
 
 
 clean:
