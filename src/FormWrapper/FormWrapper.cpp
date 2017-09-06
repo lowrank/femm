@@ -16,6 +16,7 @@ FormWrapper::~FormWrapper() {
 	// TODO Auto-generated destructor stub
 }
 
+// reference 2d
 void FormWrapper::Reference(M_Ptr &R, M_Ptr &Rx, M_Ptr &Ry, M_Ptr points, M_Ptr qpoints){
 
 	auto np = mxGetN(points);
@@ -100,6 +101,36 @@ void FormWrapper::Reference(M_Ptr &R, M_Ptr &Rx, M_Ptr &Ry, M_Ptr points, M_Ptr 
 	mxDestroyArray(Fy);
 }
 
+void FormWrapper::Reference(M_Ptr& R, M_Ptr points, M_Ptr qpoints){
+	auto np = mxGetN(points);
+	auto nq = mxGetN(qpoints);
+
+	auto T = dMat(np, np);
+	auto F = dMat(np, nq);
+	auto Tp = mxGetPr(T);
+	auto Fp = mxGetPr(F);
+
+	auto pp = mxGetPr(points);
+	auto qp = mxGetPr(qpoints);
+
+	for (size_t col = 0; col < np; col++){
+		for (size_t i = 0; i < np; i++){
+			*Tp++ = pow(pp[col], i);
+		}
+	}
+
+	for (size_t col = 0; col < nq; col++) {
+		for (size_t i = 0; i < np; i++) {
+			*Fp++ = pow(qp[col], i);
+		}
+	}
+
+	mxArray* RHS_f[] = {T, F};
+	mexCallMATLAB(1, &R, 2, RHS_f, "mldivide");
+
+	mxDestroyArray(T);
+	mxDestroyArray(F);
+}
 
 using namespace mexplus;
 template class mexplus::Session<FormWrapper>;
@@ -118,7 +149,7 @@ MEX_DEFINE(delete) (int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[]) 
 	Session<FormWrapper>::destroy(input.get(0));
 }
 
-MEX_DEFINE(ref)(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[]) {
+MEX_DEFINE(ref2d)(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[]) {
 	InputArguments input(nrhs, prhs, 3);
 	OutputArguments output(nlhs, plhs, 3);
 
@@ -132,6 +163,20 @@ MEX_DEFINE(ref)(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[]) {
 	plhs[2] = dMat(np, nq);
 
 	form->Reference(plhs[0], plhs[1], plhs[2], C_CAST(prhs[1]), C_CAST(prhs[2]));
+}
+
+MEX_DEFINE(ref1d)(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[]) {
+	InputArguments input(nrhs, prhs, 3);
+	OutputArguments output(nlhs, plhs, 1);
+
+	auto form = Session<FormWrapper>::get(input.get(0));
+
+	auto np = mxGetN(prhs[1]);
+	auto nq = mxGetN(prhs[2]);
+
+	plhs[0] = dMat(np, nq);
+
+	form->Reference(plhs[0], C_CAST(prhs[1]), C_CAST(prhs[2]));
 }
 
 }

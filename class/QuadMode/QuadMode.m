@@ -13,7 +13,10 @@ classdef QuadMode < handle
         end
 
         function delete(this)
-            if (this.dimension == 2)
+            if (this.dimension == 1)
+                logger('*Red', sprintf('  Destroying QuadMode at %d.\n', this.address));
+                ModeWrapper('delete_lin', this.address);
+            elseif (this.dimension == 2)
                 logger('*Red', sprintf('  Destroying QuadMode at %d.\n', this.address));
                 ModeWrapper('delete_tri', this.address);
             else
@@ -27,7 +30,11 @@ classdef QuadMode < handle
         end
 
         function [varargout] = get_vr_quad(this, degree)
-            if (this.dimension == 2)
+            if (this.dimension == 1)
+                varargout = cell(2, 1);
+                [varargout{1}, varargout{2}] = ModeWrapper('load_vr_lin', this.address, degree);
+               
+            elseif (this.dimension == 2)
                 varargout = cell(3, 1);
                 [varargout{1}, varargout{2}, varargout{3}] = ModeWrapper('load_vr_tri', this.address, degree);
                 [varargout{1}, varargout{2}, varargout{3}] = this.affine_tri(varargout{1}, varargout{2}, varargout{3});
@@ -46,12 +53,8 @@ classdef QuadMode < handle
             cprintf('*Cyan', '- get_vr_quad : get unscaled quadrature nodes and weights. \n');
             cprintf('*Cyan', '- getAddress : get address of pointer. \n');
             cprintf('*Cyan', '- delete : call destructor automatically. \n');
-            cprintf('*Cyan', '- affine : map quadrature points to reference triangle. \n');
+            cprintf('*Cyan', '- affine : map quadrature points to reference triangle/tetrahedron. \n');
         end
-
-        % todo : change following function adapt to 3d.
-
-
 
         function [x, y, w] = affine_tri(x, y, w)
             A = [1./2. -1./sqrt(3)/2.; 0. 1.0/sqrt(3.0)];

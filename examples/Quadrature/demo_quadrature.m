@@ -14,4 +14,18 @@ for i = 0:deg
     end
 end
 
-logger('*cyan', sprintf('     maximum relative error is %4.6e', error));
+logger('*cyan', sprintf('     maximum relative error is %4.6e\n', error));
+
+
+qm = QuadMode(1);
+deg = 13;
+[qx, qw] = qm.get_vr_quad(deg);
+error = 0.;
+%%  test performance.
+for i = 0:deg / 2
+    val = 2.0/(2 * i+1);
+    out = (qx.^(2*i))'*qw;
+    error = max(error, abs((out -val)/val));
+end
+
+logger('*cyan', sprintf('     maximum relative error is %4.6e\n', error));

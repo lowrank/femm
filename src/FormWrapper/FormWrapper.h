@@ -24,7 +24,7 @@ public:
 	 * 2D and 1D references,
 	 */
 	void Reference(M_Ptr &R, M_Ptr &Rx, M_Ptr &Ry, M_Ptr points, M_Ptr qpoints);
-	void Reference(M_Ptr &R, M_Ptr &Rx, M_Ptr &points, M_Ptr& qpoints);
+	void Reference(M_Ptr &R, M_Ptr points, M_Ptr qpoints);
 
 };
 

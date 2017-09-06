@@ -12,9 +12,6 @@ classdef FunctionSpace < handle
         edges
         edgeIds
         neighbors
-        
-        reference % struct to be done.
-        jacobian  % Jacobian matrix for each element.
     end
 
     methods

@@ -70,4 +70,26 @@ public:
     void get_vr_data(size_t deg);
 };
 
+
+class QRule_lin {
+public:
+	vector<double> points_x;
+	vector<double> weights;
+
+	void resize(size_t n) {
+		points_x.resize(n);
+		weights.resize(n);
+	}
+};
+
+class tModeInfo_lin {
+public:
+	QRule_lin table;
+	tModeInfo_lin();
+	~tModeInfo_lin();
+
+	void get_vr_data(size_t deg);
+};
+
+
 #endif //MESHWRAPPER_TMODEINFO_H
