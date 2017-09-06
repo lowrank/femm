@@ -1,18 +1,26 @@
 classdef FunctionSpace < handle
-
-    properties
+    
+    properties (Access = private)
         address
-        
+    end
+    
+
+    properties (Access = public)
+        deg
         nodes
         elems
         edges
-        edgeIds;
-        neighbors;
+        edgeIds
+        neighbors
+        
+        reference % struct to be done.
+        jacobian  % Jacobian matrix for each element.
     end
 
     methods
         function this = FunctionSpace(tm, deg)
             this.address = FunctionSpaceWrapper('new');   
+            this.deg     = deg;
             % get all information from triangle mesh.
             [p, s, t, e, n] = tm.getData_tri();
             % build up function space.

@@ -49,6 +49,11 @@ classdef TriangleMesh < handle
             
         end
         
+        function conn = connectivity(this)
+            [I, J, V] = TriangleWrapper('connectivity', this.address);
+            conn = sparse(I,J,V);
+        end
+        
 
     end
     
