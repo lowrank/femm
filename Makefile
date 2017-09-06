@@ -59,7 +59,7 @@ $(ModeWrapperOut)/ModeWrapper.mexa64: $(ModeWrapper)/ModeWrapper.o
 
 ###########################################################
 MetisWrapper = src/MetisWrapper
-MetisWrapperOut = class/MeshPartition
+MetisWrapperOut = utility/MeshPartition
 
 $(MetisWrapper)/MetisWrapper.o: $(MetisWrapper)/metismex.c
 	$(CXX) -c $(CXX_INCLUDE) $(CXX_FLAGS) $< -o $@
