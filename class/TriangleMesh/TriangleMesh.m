@@ -70,7 +70,7 @@ classdef TriangleMesh < handle
     methods (Static)
         function about_tri()
             TriangleWrapper('verionInfo_tri');
-        end
+        end        
     end
     
 end

@@ -1,10 +1,9 @@
 classdef FunctionSpace < handle
-    
+    % This class is replacement for previous promote function.
     properties (Access = private)
         address
     end
     
-
     properties (Access = public)
         deg
         nodes

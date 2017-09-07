@@ -75,7 +75,7 @@ FormWrapper = src/FormWrapper
 FormWrapperOut = class/FormBuilder/private
 
 
-$(FormWrapper)/FormWrapper.o: $(FormWrapper)/FormWrapper.cpp
+$(FormWrapper)/FormWrapper.o: $(FormWrapper)/Assembler.cpp
 	$(CXX) -c $(CXX_INCLUDE) $(CXX_FLAGS) $< -o $@
 	
 $(FormWrapperOut)/FormWrapper.mexa64: $(FormWrapper)/FormWrapper.o

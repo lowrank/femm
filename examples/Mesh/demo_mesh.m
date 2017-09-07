@@ -12,10 +12,12 @@ mesh.getInfo_tri();
 
 C = mesh.connectivity();
 [pts,~, elem, ~, ~] = mesh.getData_tri();
-map = MetisPartition('PartGraphRecursive', C, 4);
+
+K= 8;
+map = MetisPartition('PartGraphRecursive', C, K);
 
 figure; hold on;
-for val = 0:3
+for val = 0:K-1
 v = elem(:, map==val);
 p = pts(:, unique(v));
 scatter(p(1,:), p(2,:));
