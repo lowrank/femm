@@ -113,7 +113,7 @@ classdef femm < handle
         function w = adj(obj, u, v, Fs, Fa)
             w = obj.builder.assemble_node(obj.space.nodes, obj.space.elems, ...
                 obj.facet.ref, obj.facet.refx, obj.facet.refy,...
-                obj.facet.weight, Fs, Fa, u, v);
+                obj.facet.weights, Fs, Fa, u, v);
         end
     end
     
