@@ -1,18 +1,24 @@
 classdef FunctionSpace < handle
-
-    properties
+    % This class is replacement for previous promote function.
+    properties (Access = private)
         address
-        
+    end
+    
+    properties (Access = public)
+        deg
         nodes
         elems
         edges
-        edgeIds;
-        neighbors;
+        edgeIds
+        neighbors
+        partition
+        partitionIdx
     end
 
     methods
-        function this = FunctionSpace(tm, deg)
+        function this = FunctionSpace(tm, deg, Kpart)
             this.address = FunctionSpaceWrapper('new');   
+            this.deg     = deg;
             % get all information from triangle mesh.
             [p, s, t, e, n] = tm.getData_tri();
             % build up function space.
@@ -20,6 +26,15 @@ classdef FunctionSpace < handle
             build(this, p, s, t, e, n, deg);
             [this.nodes, this.elems, this.edges, this.edgeIds, this.neighbors] = getData(this);
             
+            if (nargin < 3) 
+                this.partition = {1:size(t, 2)}; % 1 part only.
+                this.partitionIdx = 0;
+            else
+                assert(Kpart >= 2);
+                this.partition = tm.part(Kpart);
+                [~, nc] =cellfun(@size, this.partition);
+                this.partitionIdx = [0;cumsum(nc(1:end-1))];
+            end
         end
 
         function delete(this)

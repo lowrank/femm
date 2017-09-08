@@ -1,73 +1,56 @@
-//
-// Created by lurker on 4/18/17.
-//
+/*
+ * Integrator.h
+ *
+ *  Created on: Oct 10, 2014
+ *      Author: lurker
+ */
 
-#ifndef MESHWRAPPER_TMODEINFO_H
-#define MESHWRAPPER_TMODEINFO_H
+#ifndef INTEGRATOR_PRIVATE_INTEGRATOR_H_
+#define INTEGRATOR_PRIVATE_INTEGRATOR_H_
 
+
+#ifdef SINGLE
+#define REAL float
+#else /* not SINGLE */
+#define REAL double
+#endif /* not SINGLE */
+
+
+#include <iostream>
+#include <iterator>
+#include <string.h>
+
+#include <mexplus.h>
 
 #include <vector>
 #include <cstdlib>
-#include <quadmath.h>
 
-#include <cstring>
-#include "mexplus.h"
 #include "common.h"
 
-
+using namespace std;
 using namespace mexplus;
 
-
-using std::vector;
-
-class QRule_tet {
+class Integrator {
 public:
-    vector<double > points_x;
-    vector<double > points_y;
-    vector<double > points_z;
-    vector<double > weights;
-    size_t          degree;
+	Integrator(int dim, int Degree) ;
+	virtual ~Integrator() ;
 
-    void resize(size_t n) {
-        points_x.resize(n);
-        points_y.resize(n);
-        points_z.resize(n);
-        weights.resize(n);
-    }
+	/*
+	 * public members
+	 */
+	std::size_t _dim;
+	std::vector<double> qwts;
+	std::vector<double> qpts;
+	std::size_t prec;
+
+	/*
+	 * Evaluate nodal basis function on nodes
+	 */
+private:
+	void QuadratureData();
+	void GaussData();
+	void clear();
+
 };
 
-class tModeInfo_tet {
-public:
-    QRule_tet table;
-
-    tModeInfo_tet();
-    ~tModeInfo_tet();
-
-    void get_vr_data(size_t deg);
-};
-
-class QRule_tri {
-public:
-    vector<__float128 > points_x;
-    vector<__float128 > points_y;
-    vector<__float128 > weights;
-    size_t          degree;
-
-    void resize(size_t n) {
-        points_x.resize(n);
-        points_y.resize(n);
-        weights.resize(n);
-    }
-};
-
-class tModeInfo_tri {
-public:
-    QRule_tri table;
-
-    tModeInfo_tri();
-    ~tModeInfo_tri();
-
-    void get_vr_data(size_t deg);
-};
-
-#endif //MESHWRAPPER_TMODEINFO_H
+#endif /* INTEGRATOR_PRIVATE_INTEGRATOR_CC_ */

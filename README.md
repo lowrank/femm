@@ -4,11 +4,16 @@
 - [x] FunctionSpace class.
 - [x] Function method.
 - [x] Quadrature modes.
-- [ ] Bilinear Form.
-- [ ] Linear Form.
+- [x] Mesh partition.
+- [x] Bilinear Form.
+- [x] Linear Form.
 
 # Pre-build
+
+libraries needed: ``trianlge``, ``metis``(5.x).
+
 - ``apt-get install libtriangle-dev``
+- ``apt-get install libmetis-dev``
 
 # Build
 - ``make`` 

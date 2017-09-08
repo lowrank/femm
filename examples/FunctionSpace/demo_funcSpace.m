@@ -1,4 +1,6 @@
 clc; clear;
+global logger_level
+logger_level = 0;
 %% create Mesh
 mesh = TriangleMesh();
 % setup
@@ -19,13 +21,26 @@ mesh = mesh.build_tri(); % not ready.
 mesh = mesh.refine_tri('q34.0a0.00125');
 % mesh.getInfo_tri();
 
+
+[pts,~, elem, ~, ~] = mesh.getData_tri();
+
+K = 4;
+partition = mesh.part(K);
+
+figure(1); hold on;
+for val = 0:(K-1)
+v = elem(:, partition{val+1});
+p = pts(:, unique(v));
+scatter(p(1,:), p(2,:), 2 * val + 1);
+end
+hold off;
+
 %% Function Space
 
-f = @(x)(sin(2*pi*x(1,:).*sin(2*pi*x(2,:))));
+f = @(x)(sin(2*pi*x(:,1).*sin(2*pi*x(:, 2))));
 V = FunctionSpace(mesh, 2);
-u = Function(V, f); % allocation.
-v = Function(V);
-
-trisurf(V.elems(1:3, :)', V.nodes(1,:), V.nodes(2,:), v, 'EdgeColor', 'none');shading interp;axis equal;view(2);
+u = f(V.nodes');
+figure(2);
+trisurf(V.elems(1:3, :)', V.nodes(1,:), V.nodes(2,:), u, 'EdgeColor', 'none');shading interp;axis equal;view(2);
 
 
