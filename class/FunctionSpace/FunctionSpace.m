@@ -12,6 +12,7 @@ classdef FunctionSpace < handle
         edgeIds
         neighbors
         partition
+        partitionIdx
     end
 
     methods
@@ -27,9 +28,12 @@ classdef FunctionSpace < handle
             
             if (nargin < 3) 
                 this.partition = {1:size(t, 2)}; % 1 part only.
+                this.partitionIdx = 0;
             else
                 assert(Kpart >= 2);
                 this.partition = tm.part(Kpart);
+                [~, nc] =cellfun(@size, this.partition);
+                this.partitionIdx = [0;cumsum(nc(1:end-1))];
             end
         end
 

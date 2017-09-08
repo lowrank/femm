@@ -3,8 +3,7 @@ classdef femm < handle
         facet
         edge
         space
-        quad2d
-        quad1d
+        quadrature
         builder
         data
     end
@@ -41,7 +40,7 @@ classdef femm < handle
                 obj.facet.qnodes);
             
             % fill the information of edge.
-            [obj.edge.qnodes, obj.edge.weights] = ...
+            [obj.edge.qnodes, obj.edge.weigths] = ...
                 QuadMode(1,d).export();
             
             [obj.edge.ref, ~] = obj.builder.reference1D(opt.deg, obj.edge.qnodes);
@@ -62,8 +61,7 @@ classdef femm < handle
             else
                 obj.space = FunctionSpace(mesh, opt.deg);
             end
-            obj.quad2d = obj.builder.qnodes2D(obj.space.nodes, obj.facet.qnodes, obj.space.elems);   
-            obj.quad1d = obj.builder.qnodes1D(obj.space.nodes, obj.edge.qnodes, obj.space.edges);
+            obj.quadrature = obj.builder.qnodes2D(obj.space.nodes, obj.facet.qnodes, obj.space.elems);            
             
             %% Data : det(Area), Jacobian
             obj.data.area = arealist(obj.space.nodes, obj.space.elems);
@@ -82,8 +80,8 @@ classdef femm < handle
                     obj.facet.ref, obj.facet.weights, F, obj.data.area);
                 ret = sparse(I,J,V);
             elseif flag == 's'
-                [I, J, V] = obj.builder.assems(obj.space.nodes, obj.space.elems,...
-                    obj.facet.refx, obj.facet.refy, obj.facet.weights, F, obj.data.area);
+                [I, J, V] = obj.builder.assems(obj.builder.nodes, obj.space.elems,...
+                    obj.facet.refx, obj.facet.refy, obj.facet.weights, F);
                 ret = sparse(I,J, V);
             elseif flag == 'e'
                 if strcmp(bc, 'all')
@@ -98,8 +96,7 @@ classdef femm < handle
                 ret = obj.builder.asseml(obj.space.nodes, obj.facet.qnodes, obj.space.elems, obj.facet.ref, obj.facet.weights, F, obj.data.area);
             elseif flag == 'g'
                 if strcmp(bc, 'all')
-                    ret = obj.builder.assemrbc(obj.space.nodes, obj.edge.qnodes, obj.space.edges, ...
-                        obj.edge.ref, obj.edge.weights, F);
+                    ret = obj.builder.assemrbc(obj.space.nodes, obj)
                 else
                     error('FEMM:BUILD:not implemented.');
                 end

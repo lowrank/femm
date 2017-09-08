@@ -1,0 +1,6 @@
+clc;clear;
+
+opt = struct('deg', 1, 'qdeg', 2, 'min_area', 5e-4, 'edge', [0 1 1 0; 0 0 1 1]);
+V = femm(opt);
+
+S = V.build('s', 1);

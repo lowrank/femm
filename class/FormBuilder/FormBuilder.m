@@ -10,7 +10,6 @@ methods
   end
 
   function delete(this)
-  %DELETE Destructor.
     FormWrapper('delete', this.address);
   end
   
@@ -22,16 +21,16 @@ methods
   	[F, DX] = FormWrapper('reference1D', this.address, deg, qnodes);
   end
   
-  function [I, J, V] = assema(this, pnodes, pelems, ref_fnk, weights, extern, A)
-  	[I, J, V] = FormWrapper('assema', this.address, pnodes, pelems, ref_fnk, weights, extern, A);
+  function [I, J, V] = assema(this, pnodes, pelems, ref_fnk, weights, extern, Arealist)
+  	[I, J, V] = FormWrapper('assema', this.address, pnodes, pelems, ref_fnk, weights, extern, Arealist);
   end
   
-  function [I, J, V] = assems(this, pnodes, pelems, ref_gradx, ref_grady, weights, extern)
-  	[I, J, V] = FormWrapper('assems', this.address, pnodes, pelems, ref_gradx, ref_grady, weights, extern);
+  function [I, J, V] = assems(this, pnodes, pelems, ref_gradx, ref_grady, weights, extern, Arealist)
+  	[I, J, V] = FormWrapper('assems', this.address, pnodes, pelems, ref_gradx, ref_grady, weights, extern, Arealist);
   end
   
-  function [L] = asseml(this, pnodes, qnodes, pelems, ref, weights, extern, A) 
-    [L] = FormWrapper('asseml', this.address, pnodes, qnodes, pelems, ref, weights, extern, A);
+  function [L] = asseml(this, pnodes, qnodes, pelems, ref, weights, extern, Arealist) 
+    [L] = FormWrapper('asseml', this.address, pnodes, qnodes, pelems, ref, weights, extern, Arealist);
   end
   
   function [L] = assemrbc(this, pnodes, qnodes, pedges, ref, weights, extern) 

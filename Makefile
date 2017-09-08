@@ -83,12 +83,25 @@ $(FormWrapperOut)/FormWrapper.mexa64: $(FormWrapper)/FormWrapper.o
 
 ###########################################################
 
+##################### BC ##################################
+BCWrapper = src/BCWrapper
+BCWrapperOut = class/BC/private
+
+$(BCWrapper)/BCWrapper.o: $(BCWrapper)/Boundary.cpp
+	$(CXX) -c $(CXX_INCLUDE) $(CXX_FLAGS) $< -o $@
+	
+$(BCWrapperOut)/BCWrapper.mexa64: $(BCWrapper)/BCWrapper.o
+	$(CXX) $(MATLAB_LINKS) -o $@ $< $(CXX_LIBS) && rm  $(BCWrapper)/BCWrapper.o
+
+###########################################################
+
 	
 all:$(TriangleWrapperOut)/TriangleWrapper.mexa64 \
 $(FunctionWrapperOut)/FunctionSpaceWrapper.mexa64 \
 $(ModeWrapperOut)/ModeWrapper.mexa64 \
 $(MetisWrapperOut)/MetisPartition.mexa64 \
-$(FormWrapperOut)/FormWrapper.mexa64
+$(FormWrapperOut)/FormWrapper.mexa64 \
+$(BCWrapperOut)/BCWrapper.mexa64
 
 
 clean:
@@ -97,5 +110,6 @@ clean:
 	rm -f $(ModeWrapperOut)/ModeWrapper.mexa64
 	rm -f $(MetisWrapperOut)/MetisPartition.mexa64
 	rm -f $(FormWrapperOut)/FormBuilder.mexa64
+	rm -rf $(BCWrapperOut)/BCWrapper.mexa64
 
 

@@ -52,17 +52,17 @@ public:
 	 */
 	// if kernel is a function
 	void AssembleStiff(double*&, double*&, double*&,M_Ptr, M_Ptr,
-			M_Ptr, M_Ptr, M_Ptr, M_Ptr);
+			M_Ptr, M_Ptr, M_Ptr, M_Ptr, M_Ptr Arealist);
 
 	// with a symmetric/diagonal matrix kernel
 	void AssembleStiff(double*&, double*&, double*&,M_Ptr, M_Ptr,
-			M_Ptr, M_Ptr, M_Ptr, M_Ptr, M_Ptr);
+			M_Ptr, M_Ptr, M_Ptr, M_Ptr, M_Ptr, M_Ptr);
 	/*
 	 * Load Vector from Robin Boundary
 	 */
 	void AssembleLoad(double*& pLoad, M_Ptr Nodes,
 			M_Ptr QNodes, M_Ptr Elems,M_Ptr Ref,
-			M_Ptr Weights, M_Ptr Fcn, M_Ptr A);
+			M_Ptr Weights, M_Ptr Fcn, M_Ptr Arealist);
 
 	/*
 	 * Integral for point source < Fcn , delta(x)> = Fcn(x) in infinite dimensional space

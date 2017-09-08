@@ -347,7 +347,7 @@ void Assembler::AssembleBC(double*& pNeumann, M_Ptr Nodes,
 
 void Assembler::AssembleMass(double* &pI, double* &pJ, double* &pV,
 		M_Ptr Nodes, M_Ptr Elems,M_Ptr Ref,
-		M_Ptr Weights, M_Ptr Fcn, M_Ptr A){
+		M_Ptr Weights, M_Ptr Fcn, M_Ptr Arealist){
 
 
 	auto  pnodes_ptr           = mxGetPr(Nodes);
@@ -360,7 +360,7 @@ void Assembler::AssembleMass(double* &pI, double* &pJ, double* &pV,
 	auto numberofnodesperelem   = mxGetM(Elems);
 	auto numberofqnodes         = mxGetN(Ref);
 
-	auto area_ptr               = mxGetPr(A);
+	auto area_ptr               = mxGetPr(Arealist);
 
 	mwSize vertex_1, vertex_2 , vertex_3;
 	double det, area;
@@ -543,7 +543,7 @@ void Assembler::Qnodes1D(double*& Coords, M_Ptr Nodes, M_Ptr QNodes, M_Ptr Edges
 // calculate integral on boundary
 void Assembler::AssembleLoad(double*& pLoad, M_Ptr Nodes,
 		M_Ptr QNodes, M_Ptr Elems,M_Ptr Ref,
-		M_Ptr Weights, M_Ptr Fcn, M_Ptr A) {
+		M_Ptr Weights, M_Ptr Fcn, M_Ptr Arealist) {
 
 	auto  pnodes_ptr           = mxGetPr(Nodes);
 	auto  qnodes_ptr           = mxGetPr(QNodes);
@@ -556,7 +556,7 @@ void Assembler::AssembleLoad(double*& pLoad, M_Ptr Nodes,
 	auto numberofnodesperelem   = mxGetM(Elems);
 	auto numberofqnodes         = mxGetN(Ref);
 
-	auto area_ptr               = mxGetPr(A);
+	auto area_ptr               = mxGetPr(Arealist);
 
 
 	mwSize vertex_1, vertex_2 , vertex_3;
@@ -605,7 +605,7 @@ void Assembler::AssembleLoad(double*& pLoad, M_Ptr Nodes,
 
 void Assembler::AssembleStiff(double* &pI, double* &pJ, double*&pV,
 		M_Ptr Nodes, M_Ptr Elems, M_Ptr RefX,
-		M_Ptr RefY, M_Ptr Weights, M_Ptr Fcn) {
+		M_Ptr RefY, M_Ptr Weights, M_Ptr Fcn, M_Ptr Arealist) {
 
 
 	auto  pnodes_ptr           = mxGetPr(Nodes);
@@ -618,6 +618,7 @@ void Assembler::AssembleStiff(double* &pI, double* &pJ, double*&pV,
 	auto numberofelem           = mxGetN(Elems);
 	auto numberofnodesperelem   = mxGetM(Elems);
 	auto numberofqnodes         = mxGetN(RefX);
+	auto area_ptr               = mxGetPr(Arealist);
 
 
 	mwSize vertex_1, vertex_2, vertex_3;
@@ -638,8 +639,7 @@ void Assembler::AssembleStiff(double* &pI, double* &pJ, double*&pV,
 			Jacobian[1][0] = pnodes_ptr[2*vertex_1    ] - pnodes_ptr[2*vertex_3    ];
 
 			// Orientation corrected.
-			det = Jacobian[0][0] * Jacobian[1][1] - Jacobian[0][1] * Jacobian[1][0];
-			area = 0.5*fabs(det);
+			area = area_ptr[i];
 
 			// Due to symmetric property, half of work load can be reduced
 			for (size_t j = 0; j < numberofnodesperelem; j++){
@@ -681,8 +681,7 @@ void Assembler::AssembleStiff(double* &pI, double* &pJ, double*&pV,
 			Jacobian[1][0] = pnodes_ptr[2*vertex_1    ] - pnodes_ptr[2*vertex_3    ];
 
 			// Orientation corrected.
-			det = Jacobian[0][0] * Jacobian[1][1] - Jacobian[0][1] * Jacobian[1][0];
-			area = 0.5*fabs(det);
+			area = area_ptr[i];
 
 			auto r = Interp[i];
 			// Due to symmetric property, half of work load can be reduced
@@ -725,8 +724,7 @@ void Assembler::AssembleStiff(double* &pI, double* &pJ, double*&pV,
 			Jacobian[1][0] = pnodes_ptr[2*vertex_1    ] - pnodes_ptr[2*vertex_3    ];
 
 			// Orientation corrected.
-			det = Jacobian[0][0] * Jacobian[1][1] - Jacobian[0][1] * Jacobian[1][0];
-			area = 0.5*fabs(det);
+			area = area_ptr[i];
 
 			// Due to symmetric property, half of work load can be reduced
 			for (size_t j = 0; j < numberofnodesperelem; j++){
@@ -764,7 +762,7 @@ void Assembler::AssembleStiff(double* &pI, double* &pJ, double*&pV,
 
 void Assembler::AssembleStiff(double* &pI, double* &pJ, double*&pV,
 		M_Ptr Nodes, M_Ptr Elems, M_Ptr RefX,
-		M_Ptr RefY, M_Ptr Weights, M_Ptr Fcn_X, M_Ptr Fcn_Y) {
+		M_Ptr RefY, M_Ptr Weights, M_Ptr Fcn_X, M_Ptr Fcn_Y, M_Ptr Arealist) {
 
 
 	auto  pnodes_ptr           = mxGetPr(Nodes);
@@ -778,6 +776,7 @@ void Assembler::AssembleStiff(double* &pI, double* &pJ, double*&pV,
 	auto numberofelem           = mxGetN(Elems);
 	auto numberofnodesperelem   = mxGetM(Elems);
 	auto numberofqnodes         = mxGetN(RefX);
+	auto area_ptr               = mxGetPr(Arealist);
 
 
 	mwSize vertex_1, vertex_2, vertex_3;
@@ -799,9 +798,7 @@ void Assembler::AssembleStiff(double* &pI, double* &pJ, double*&pV,
 			Jacobian[1][0] = pnodes_ptr[2*vertex_1    ] - pnodes_ptr[2*vertex_3    ];
 
 			// Orientation corrected.
-			det = Jacobian[0][0] * Jacobian[1][1] - Jacobian[0][1] * Jacobian[1][0];
-			area = 0.5*fabs(det);
-
+			area = area_ptr[i];
 			// Due to symmetric property, half of work load can be reduced
 			for (size_t j = 0; j < numberofnodesperelem; j++){
 				for (size_t k = 0; k < j + 1; k++){
@@ -848,8 +845,7 @@ void Assembler::AssembleStiff(double* &pI, double* &pJ, double*&pV,
 			Jacobian[1][0] = pnodes_ptr[2*vertex_1    ] - pnodes_ptr[2*vertex_3    ];
 
 			// Orientation corrected.
-			det = Jacobian[0][0] * Jacobian[1][1] - Jacobian[0][1] * Jacobian[1][0];
-			area = 0.5*fabs(det);
+			area = area_ptr[i];
 
 			// Due to symmetric property, half of work load can be reduced
 			for (size_t j = 0; j < numberofnodesperelem; j++){
@@ -1504,33 +1500,6 @@ MEX_DEFINE(reference1D)(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs
 }
 
 MEX_DEFINE(assems)(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[]){
-	InputArguments input(nrhs, prhs, 7);
-	OutputArguments output(nlhs, plhs, 3);
-	Assembler* assembler = Session<Assembler>::get(input.get(0));
-
-	size_t numberofelem           = mxGetN(prhs[2]);
-	size_t numberofnodesperelem   = mxGetM(prhs[2]);
-	size_t numberofqnodes         = mxGetM(prhs[3]);
-
-
-	plhs[0] = mxCreateNumericMatrix(numberofnodesperelem * numberofnodesperelem * numberofelem, 1,  mxDOUBLE_CLASS, mxREAL);
-	double* pI = mxGetPr(plhs[0]);
-
-	plhs[1] = mxCreateNumericMatrix(numberofnodesperelem * numberofnodesperelem * numberofelem, 1,  mxDOUBLE_CLASS, mxREAL);
-	double* pJ = mxGetPr(plhs[1]);
-
-	plhs[2] = mxCreateNumericMatrix(numberofnodesperelem * numberofnodesperelem * numberofelem, 1, mxDOUBLE_CLASS, mxREAL);
-	double* pV = mxGetPr(plhs[2]);
-
-	assembler->AssembleStiff(pI, pJ, pV, C_CAST(prhs[1]),
-			C_CAST(prhs[2]), C_CAST(prhs[3]),
-			C_CAST(prhs[4]), C_CAST(prhs[5]),
-			C_CAST(prhs[6]));
-}
-
-// advanced interface with matrix kernel
-MEX_DEFINE(assemsm)(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[]){
-
 	InputArguments input(nrhs, prhs, 8);
 	OutputArguments output(nlhs, plhs, 3);
 	Assembler* assembler = Session<Assembler>::get(input.get(0));
@@ -1552,7 +1521,34 @@ MEX_DEFINE(assemsm)(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[]){
 	assembler->AssembleStiff(pI, pJ, pV, C_CAST(prhs[1]),
 			C_CAST(prhs[2]), C_CAST(prhs[3]),
 			C_CAST(prhs[4]), C_CAST(prhs[5]),
-			C_CAST(prhs[6]), C_CAST(prhs[7]));
+			C_CAST(prhs[6]),C_CAST(prhs[7]) );
+}
+
+// advanced interface with matrix kernel
+MEX_DEFINE(assemsm)(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[]){
+
+	InputArguments input(nrhs, prhs, 9);
+	OutputArguments output(nlhs, plhs, 3);
+	Assembler* assembler = Session<Assembler>::get(input.get(0));
+
+	size_t numberofelem           = mxGetN(prhs[2]);
+	size_t numberofnodesperelem   = mxGetM(prhs[2]);
+	size_t numberofqnodes         = mxGetM(prhs[3]);
+
+
+	plhs[0] = mxCreateNumericMatrix(numberofnodesperelem * numberofnodesperelem * numberofelem, 1,  mxDOUBLE_CLASS, mxREAL);
+	double* pI = mxGetPr(plhs[0]);
+
+	plhs[1] = mxCreateNumericMatrix(numberofnodesperelem * numberofnodesperelem * numberofelem, 1,  mxDOUBLE_CLASS, mxREAL);
+	double* pJ = mxGetPr(plhs[1]);
+
+	plhs[2] = mxCreateNumericMatrix(numberofnodesperelem * numberofnodesperelem * numberofelem, 1, mxDOUBLE_CLASS, mxREAL);
+	double* pV = mxGetPr(plhs[2]);
+
+	assembler->AssembleStiff(pI, pJ, pV, C_CAST(prhs[1]),
+			C_CAST(prhs[2]), C_CAST(prhs[3]),
+			C_CAST(prhs[4]), C_CAST(prhs[5]),
+			C_CAST(prhs[6]), C_CAST(prhs[7]), C_CAST(prhs[8]));
 }
 
 MEX_DEFINE(assema)(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[]){
