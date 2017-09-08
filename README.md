@@ -5,8 +5,8 @@
 - [x] Function method.
 - [x] Quadrature modes.
 - [x] Mesh partition.
-- [ ] Bilinear Form.
-- [ ] Linear Form.
+- [x] Bilinear Form.
+- [x] Linear Form.
 
 # Pre-build
 
