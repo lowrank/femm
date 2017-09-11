@@ -4,6 +4,7 @@ subfolders = {'./class/TriangleMesh/private',...
     './class/FormBuilder/private',...
     './class/BC/private',...
     './utility/MeshPartition'};
+compiled = 1;
 
 for i = 1:size(subfolders, 2)
     f = subfolders{i};
@@ -11,7 +12,12 @@ for i = 1:size(subfolders, 2)
     if sum([subf.isdir]) == 0
         disp(f)
         mkdir(f);
+        compiled = 0;
     end
 end
 
+if compiled == 0
 !make all
+end
+
+clear;
