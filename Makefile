@@ -29,7 +29,7 @@ CXX_LIBS = -Wl,--no-undefined -Wl,-rpath-link,"$(MATLAB_ROOT)bin/glnxa64" \
 TriangleWrapper    = src/MeshWrapper/TriangleWrapper
 TriangleWrapperOut = class/TriangleMesh/private
 
-$(TriangleWrapper)/tTriangleInfo.o: $(TriangleWrapper)/tTriangleInfo.cpp $(TriangleWrapper)/tTriangleInfo.h
+$(TriangleWrapper)/tTriangleInfo.o: $(TriangleWrapper)/tTriangleInfo.cpp $(TriangleWrapper)/tTriangleInfo.h path
 	$(CXX) -c $(CXX_INCLUDE) $(CXX_FLAGS) $< -o $@
 
 $(TriangleWrapperOut)/TriangleWrapper.mexa64: $(TriangleWrapper)/tTriangleInfo.o
@@ -40,7 +40,7 @@ $(TriangleWrapperOut)/TriangleWrapper.mexa64: $(TriangleWrapper)/tTriangleInfo.o
 FunctionWrapper = src/FunctionSpace
 FunctionWrapperOut = class/FunctionSpace/private
 
-$(FunctionWrapper)/FunctionSpace.o: $(FunctionWrapper)/FunctionSpace.cpp $(FunctionWrapper)/FunctionSpace.h
+$(FunctionWrapper)/FunctionSpace.o: $(FunctionWrapper)/FunctionSpace.cpp $(FunctionWrapper)/FunctionSpace.h path
 	$(CXX) -c $(CXX_INCLUDE) $(CXX_FLAGS) $< -o $@
 	
 $(FunctionWrapperOut)/FunctionSpaceWrapper.mexa64: $(FunctionWrapper)/FunctionSpace.o
@@ -51,7 +51,7 @@ $(FunctionWrapperOut)/FunctionSpaceWrapper.mexa64: $(FunctionWrapper)/FunctionSp
 ModeWrapper = src/ModeWrapper
 ModeWrapperOut = class/QuadMode/private
 
-$(ModeWrapper)/ModeWrapper.o: $(ModeWrapper)/tModeInfo.cpp $(ModeWrapper)/tModeInfo.h
+$(ModeWrapper)/ModeWrapper.o: $(ModeWrapper)/tModeInfo.cpp $(ModeWrapper)/tModeInfo.h path
 	$(CXX) -c $(CXX_INCLUDE) $(CXX_FLAGS) $< -o $@
 	
 $(ModeWrapperOut)/ModeWrapper.mexa64: $(ModeWrapper)/ModeWrapper.o
@@ -63,7 +63,7 @@ $(ModeWrapperOut)/ModeWrapper.mexa64: $(ModeWrapper)/ModeWrapper.o
 MetisWrapper = src/MetisWrapper
 MetisWrapperOut = utility/MeshPartition
 
-$(MetisWrapper)/MetisWrapper.o: $(MetisWrapper)/metismex.c
+$(MetisWrapper)/MetisWrapper.o: $(MetisWrapper)/metismex.c path
 	$(CXX) -c $(CXX_INCLUDE) $(CXX_FLAGS) $< -o $@
 	
 $(MetisWrapperOut)/MetisPartition.mexa64: $(MetisWrapper)/MetisWrapper.o
@@ -75,7 +75,7 @@ FormWrapper = src/FormWrapper
 FormWrapperOut = class/FormBuilder/private
 
 
-$(FormWrapper)/FormWrapper.o: $(FormWrapper)/Assembler.cpp
+$(FormWrapper)/FormWrapper.o: $(FormWrapper)/Assembler.cpp path
 	$(CXX) -c $(CXX_INCLUDE) $(CXX_FLAGS) $< -o $@
 	
 $(FormWrapperOut)/FormWrapper.mexa64: $(FormWrapper)/FormWrapper.o
@@ -87,14 +87,20 @@ $(FormWrapperOut)/FormWrapper.mexa64: $(FormWrapper)/FormWrapper.o
 BCWrapper = src/BCWrapper
 BCWrapperOut = class/BC/private
 
-$(BCWrapper)/BCWrapper.o: $(BCWrapper)/Boundary.cpp
+$(BCWrapper)/BCWrapper.o: $(BCWrapper)/Boundary.cpp path
 	$(CXX) -c $(CXX_INCLUDE) $(CXX_FLAGS) $< -o $@
 	
 $(BCWrapperOut)/BCWrapper.mexa64: $(BCWrapper)/BCWrapper.o
 	$(CXX) $(MATLAB_LINKS) -o $@ $< $(CXX_LIBS) && rm  $(BCWrapper)/BCWrapper.o
 
 ###########################################################
-
+path:
+	mkdir -p ./class/TriangleMesh/private
+	mkdir -p ./class/QuadMode/private
+	mkdir -p ./class/FunctionSpace/private
+	mkdir -p ./class/FormBuilder/private
+	mkdir -p ./class/BC/private 
+	mkdir -p ./utility/MeshPartition
 	
 all:$(TriangleWrapperOut)/TriangleWrapper.mexa64 \
 $(FunctionWrapperOut)/FunctionSpaceWrapper.mexa64 \
@@ -102,6 +108,7 @@ $(ModeWrapperOut)/ModeWrapper.mexa64 \
 $(MetisWrapperOut)/MetisPartition.mexa64 \
 $(FormWrapperOut)/FormWrapper.mexa64 \
 $(BCWrapperOut)/BCWrapper.mexa64
+
 
 
 clean:
