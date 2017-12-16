@@ -5,42 +5,21 @@ properties (Access = private)
 end
 
 methods
-  function this = BC(varargin)
-  	if nargin == 1
-    	this.address = BCWrapper('new', varargin{1});
-    elseif nargin == 0
-    	this.address = BCWrapper('placeholder');
-    end
+  function this = BC(id)
+      this.address = BCWrapper('new', id);
   end
 
-  function setDirichlet(this, edges)
-      BCWrapper('set_dirichlet', this.address, edges);
-  end
-  
   function delete(this)
       BCWrapper('delete', this.address);
   end
+  
+  function set_constraint(this, str)
+      BCWrapper('push_expr', this.address, str);
+  end
     
-  
-  function report(this)
-      BCWrapper('report', this.address);
-  end
-  
-  function [dof, ndof] = dofs(this, N)
-      [dof, ndof]  = BCWrapper('dofs', this.address, N);
-  end
-  
-  function [ndof] = getDirichlet(this)
-      ndof = BCWrapper('get_dirichlet', this.address);
-  end
-  function [] = set_boundary(this, expr)
-  	BCWrapper('set_boundary', this.address, expr);
-  end
-  
-  function [varargout] = get_boundary(this, edges, nodes, NargOut)
-     varargout = cell(NargOut, 1);
- 
-    [varargout{:}] = BCWrapper('get_boundary', this.address, edges, nodes);
+  function [varargout] = get_boundary(this, edges, nodes, Nout) 
+      varargout = cell(Nout, 1);
+      [varargout{:}] = BCWrapper('filter_segments', this.address, edges, nodes);
   end
 end
 end

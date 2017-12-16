@@ -92,7 +92,10 @@ classdef femm < handle
                     n = size(obj.space.nodes, 2);
                     ret = sparse(I, J, V, n,n);
                 else
-                    error('FEMM:BUILD:not implemented.');
+                    [I, J, V] = obj.builder.assemlbc(obj.space.nodes, bc, ...
+                    obj.edge.ref, obj.edge.weights, F);
+                    n = size(obj.space.nodes, 2);
+                    ret = sparse(I, J, V, n,n);
                 end
             elseif flag == 'l'
                 ret = obj.builder.asseml(obj.space.nodes, obj.facet.qnodes, obj.space.elems, obj.facet.ref, obj.facet.weights, F, obj.data.area);
@@ -101,7 +104,8 @@ classdef femm < handle
                     ret = obj.builder.assemrbc(obj.space.nodes, obj.edge.qnodes, obj.space.edges, ...
                         obj.edge.ref, obj.edge.weights, F);
                 else
-                    error('FEMM:BUILD:not implemented.');
+                    ret = obj.builder.assemrbc(obj.space.nodes, obj.edge.qnodes, bc, ...
+                        obj.edge.ref, obj.edge.weights, F);
                 end
             else
                 error('FEMM:BUILD:Unrecongnized flag');
