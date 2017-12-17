@@ -50,8 +50,8 @@ classdef TriangleMesh < handle
         end
         
         function conn = connectivity(this)
-            [I, J, V] = TriangleWrapper('connectivity', this.address);
-            conn = sparse(I,J,V);
+            [I, J, V, cnt] = TriangleWrapper('connectivity', this.address);
+            conn = sparse(I(1:cnt),J(1:cnt),V(1:cnt));
         end
         
         function partition = part(this, K) 

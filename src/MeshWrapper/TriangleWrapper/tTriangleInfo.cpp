@@ -235,35 +235,45 @@ namespace {
     }
 
     MEX_DEFINE(connectivity)(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]){
-        InputArguments input(nrhs, prhs, 1);
-        OutputArguments output(nlhs, plhs, 3);
+	InputArguments input(nrhs, prhs, 1);
+	OutputArguments output(nlhs, plhs, 4);
 
+	auto mesh_in = Session<tTriangleInfo>::get(input.get(0));
 
-        auto mesh_in = Session<tTriangleInfo>::get(input.get(0));
+	auto numberofelem = mesh_in->_meta.numberoftriangles;
+	auto numberofsegs = mesh_in->_meta.numberofsegments;
+	auto numberofedge = mesh_in->_meta.numberofedges;
 
-        auto numberofelem = mesh_in->_meta.numberoftriangles;
-        auto numberofsegs = mesh_in->_meta.numberofsegments;
-        auto numberofedge = mesh_in->_meta.numberofedges;
+	plhs[0] = mxCreateNumericMatrix((numberofedge) * 2, 1, mxDOUBLE_CLASS,
+			mxREAL);
+	plhs[1] = mxCreateNumericMatrix((numberofedge) * 2, 1, mxDOUBLE_CLASS,
+			mxREAL);
+	plhs[2] = mxCreateNumericMatrix((numberofedge) * 2, 1, mxDOUBLE_CLASS,
+			mxREAL);
+	plhs[3] = mxCreateNumericMatrix(1, 1, mxINT32_CLASS, mxREAL);
 
-        plhs[0] = mxCreateNumericMatrix((numberofedge - numberofsegs) * 2, 1, mxDOUBLE_CLASS, mxREAL);
-        plhs[1] = mxCreateNumericMatrix((numberofedge - numberofsegs) * 2, 1, mxDOUBLE_CLASS, mxREAL);
-        plhs[2] = mxCreateNumericMatrix((numberofedge - numberofsegs) * 2, 1, mxDOUBLE_CLASS, mxREAL);
+	double* pI = mxGetPr(plhs[0]);
+	double* pJ = mxGetPr(plhs[1]);
+	double* pV = mxGetPr(plhs[2]);
+	int* pc = (int*) mxGetPr(plhs[3]);
+	int cnt = 0;
 
-
-        double* pI = mxGetPr(plhs[0]);
-        double* pJ = mxGetPr(plhs[1]);
-        double* pV = mxGetPr(plhs[2]);
-
-        for (int elem_id = 0; elem_id < mesh_in->_meta.numberoftriangles; ++elem_id) {
-        	for (int edge_id = 0; edge_id < 3; ++edge_id) {
-        		*pI = elem_id + 1;
-        		*pJ = mesh_in->_meta.neighborlist[3 * elem_id + edge_id] + 1;
-        		if (*pJ != 0) {
-        			pI++;pJ++; *pV = 1; pV++;
-        		}
-        	}
-        }
-    }
+	for (int elem_id = 0; elem_id < mesh_in->_meta.numberoftriangles;
+			++elem_id) {
+		for (int edge_id = 0; edge_id < 3; ++edge_id) {
+			*pI = elem_id + 1;
+			*pJ = mesh_in->_meta.neighborlist[3 * elem_id + edge_id] + 1;
+			if (*pJ != 0) {
+				pI++;
+				pJ++;
+				*pV = 1;
+				pV++;
+				cnt++;
+			}
+			}
+		}
+	*pc = cnt;
+	}
 }
 
 MEX_DISPATCH
