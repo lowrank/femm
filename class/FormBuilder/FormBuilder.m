@@ -17,6 +17,10 @@ methods
   	[F, DX, DY] = FormWrapper('reference2D', this.address, nodes, qnodes);
   end
   
+  function [DX, DY] = reference_grad(this, nodes)
+      [DX, DY] = FormWrapper('reference_grad', this.address, nodes);
+  end
+  
   function [F, DX] = reference1D(this, deg, qnodes)
   	[F, DX] = FormWrapper('reference1D', this.address, deg, qnodes);
   end
@@ -71,6 +75,10 @@ methods
   
   function [w] = assemble_node(this, pnodes, pelems, ref, refx, refy, weights, extern_s, extern_a, u, v)
     w = FormWrapper('assemlon', this.address, pnodes, pelems, ref, refx, refy, weights, extern_s, extern_a, u, v);
+  end
+  
+  function [gx, gy] = assemble_grad(this, u, pnodes, pelems, refx, refy)
+      [gx, gy] = FormWrapper('grad', this.address, u, pnodes, pelems, refx, refy);
   end
   
   % Other methods...
