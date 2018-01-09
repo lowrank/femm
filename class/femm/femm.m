@@ -7,6 +7,7 @@ classdef femm < handle
         quad1d
         builder
         data
+        rffs
     end
     
     methods
@@ -32,6 +33,7 @@ classdef femm < handle
             % reference function space, also by brute-force. Partition is
             % not allowed here.
             rffs = FunctionSpace(rftm, opt.deg);
+            obj.rffs = rffs;
             %% Geometry
             % fill the information of facet.
             [obj.facet.qnodes, obj.facet.weights] = ...
@@ -111,6 +113,11 @@ classdef femm < handle
                 error('FEMM:BUILD:Unrecongnized flag');
             end
                 
+        end
+        
+        function  [gx, gy] = gradient(obj, u, DX, DY)
+            [gx, gy] = obj.builder.assemble_grad(u, obj.space.nodes,...
+                obj.space.elems, DX, DY);
         end
         
         %% gradient use.
