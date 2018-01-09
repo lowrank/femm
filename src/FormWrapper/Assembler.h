@@ -42,6 +42,7 @@ public:
 	 * Reference Matrix
 	 */
 	void Reference(M_Ptr&, M_Ptr&, M_Ptr&,M_Ptr,M_Ptr);
+	void Reference(M_Ptr& DX, M_Ptr& DY, M_Ptr Points);
 	/*
 	 * Mass Matrix
 	 */
@@ -130,6 +131,15 @@ public:
 			M_Ptr Ref, M_Ptr RefX,
 			M_Ptr RefY, M_Ptr Weights, M_Ptr Fcn_s, M_Ptr Fcn_a,
 			M_Ptr u, M_Ptr v);
+	/*
+	 * Calculate gradient at each node. It is known that the gradient will suffer from non-uniqueness.
+	 * but the error estimate is bounded when high order FEM is used.
+	 *
+	 * To make things compact, we put grad here in form builder. But it is not a form yet.
+	 */
+
+	void CalculateGrad(double*& wx, double *& wy, M_Ptr u, M_Ptr Nodes,
+			M_Ptr Elems, M_Ptr DX, M_Ptr DY);
 
 };
 

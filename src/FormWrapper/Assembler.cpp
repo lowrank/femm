@@ -121,6 +121,78 @@ void Assembler::Reference(M_Ptr &F, M_Ptr &DX, M_Ptr &DY,
 
 }
 
+void Assembler::Reference(M_Ptr& DX, M_Ptr& DY, M_Ptr Points) {
+
+	auto _numberofpoints = mxGetN(Points);
+
+	auto Vander = mxCreateNumericMatrix(_numberofpoints, _numberofpoints,
+			mxDOUBLE_CLASS, mxREAL);
+	auto VanderX = mxCreateNumericMatrix(_numberofpoints, _numberofpoints,
+			mxDOUBLE_CLASS, mxREAL);
+	auto VanderY = mxCreateNumericMatrix(_numberofpoints, _numberofpoints,
+			mxDOUBLE_CLASS, mxREAL);
+
+	auto Vander_ptr = mxGetPr(Vander);
+	auto VanderX_ptr = mxGetPr(VanderX);
+	auto VanderY_ptr = mxGetPr(VanderY);
+
+	auto nodes_ptr = mxGetPr(Points);
+
+	int deg = round((sqrt(8 * _numberofpoints + 1) - 3) / 2);
+
+	if ((deg + 1) * (deg + 2) / 2 != _numberofpoints) {
+		mexErrMsgTxt("Invalid length of input nodes\n");
+	}
+
+	for (size_t col = 0; col < _numberofpoints; col++) {
+		for (size_t i = 0; i < deg + 1; i++) {
+			for (size_t j = 0; j < i + 1; j++) {
+				*Vander_ptr++ = pow(nodes_ptr[2 * col], i - j)
+						* pow(nodes_ptr[2 * col + 1], j);
+			}
+		}
+	}
+
+	for (size_t col = 0; col < _numberofpoints; col++) {
+		for (size_t i = 0; i < deg + 1; i++) {
+			for (size_t j = 0; j < i + 1; j++) {
+				if (j == i) {
+					*VanderX_ptr++ = 0.;
+				} else {
+					*VanderX_ptr++ = (i - j)
+							* pow(nodes_ptr[2 * col], i - j - 1)
+							* pow(nodes_ptr[2 * col + 1], j);
+				}
+			}
+		}
+	}
+
+	for (size_t col = 0; col < _numberofpoints; col++) {
+		for (size_t i = 0; i < deg + 1; i++) {
+			for (size_t j = 0; j < i + 1; j++) {
+				if (j == 0) {
+					*VanderY_ptr++ = 0.;
+				} else {
+					*VanderY_ptr++ = j * pow(nodes_ptr[2 * col], i - j)
+							* pow(nodes_ptr[2 * col + 1], j - 1);
+				}
+			}
+		}
+	}
+
+	mxArray* RHS_x[] = { Vander, VanderX };
+	mexCallMATLAB(1, &DX, 2, RHS_x, "mldivide");
+
+	mxArray* RHS_y[] = { Vander, VanderY };
+	mexCallMATLAB(1, &DY, 2, RHS_y, "mldivide");
+
+	mxDestroyArray(Vander);
+	mxDestroyArray(VanderX);
+	mxDestroyArray(VanderY);
+
+}
+
+
 /*
  * 1D reference
  */
@@ -1448,6 +1520,66 @@ void Assembler::AssembleOverNode(double*& w, M_Ptr Nodes, M_Ptr Elems,
 	}
 }
 
+//todo
+void Assembler::CalculateGrad(double*& wx, double *& wy, M_Ptr u, M_Ptr Nodes,
+		M_Ptr Elems, M_Ptr DX, M_Ptr DY) {
+
+	auto numberofelem = mxGetN(Elems);
+	auto numberofnodeperelem = mxGetM(Elems);
+	auto pelem_ptr = (int*) mxGetPr(Elems);
+	auto pnode_ptr = mxGetPr(Nodes);
+
+	auto func_ptr = mxGetPr(u);
+	auto DX_ptr = mxGetPr(DX);
+	auto DY_ptr = mxGetPr(DY);
+
+	mwSize vertex_1, vertex_2, vertex_3;
+	double det, area;
+	double Jacobian[2][2];
+
+	double * gx_ptr = new double[numberofnodeperelem];
+	double * gy_ptr = new double[numberofnodeperelem];
+
+	for (size_t i = 0; i < numberofelem; ++i) {
+		// the i-th element
+		for (size_t j = 0; j < numberofnodeperelem; ++j) {
+			gx_ptr[j] = 0;
+			gy_ptr[j] = 0;
+
+			for (size_t k = 0; k < numberofnodeperelem; ++k) {
+				gx_ptr[j] +=
+						func_ptr[pelem_ptr[i * numberofnodeperelem + k] - 1]
+								* DX_ptr[j * numberofnodeperelem + k];
+				gy_ptr[j] +=
+						func_ptr[pelem_ptr[i * numberofnodeperelem + k] - 1]
+								* DY_ptr[j * numberofnodeperelem + k];
+			}
+		}
+
+		vertex_1 = pelem_ptr[numberofnodeperelem * i] - 1;
+		vertex_2 = pelem_ptr[numberofnodeperelem * i + 1] - 1;
+		vertex_3 = pelem_ptr[numberofnodeperelem * i + 2] - 1;
+
+		Jacobian[0][0] = pnode_ptr[2 * vertex_3 + 1]
+				- pnode_ptr[2 * vertex_1 + 1];
+		Jacobian[1][1] = pnode_ptr[2 * vertex_2] - pnode_ptr[2 * vertex_1];
+		Jacobian[0][1] = pnode_ptr[2 * vertex_1 + 1]
+				- pnode_ptr[2 * vertex_2 + 1];
+		Jacobian[1][0] = pnode_ptr[2 * vertex_1] - pnode_ptr[2 * vertex_3];
+
+		det = Jacobian[0][0] * Jacobian[1][1] - Jacobian[0][1] * Jacobian[1][0];
+
+		for (size_t j = 0; j < numberofnodeperelem; ++j) {
+			wx[i * numberofnodeperelem + j] = (Jacobian[0][0] * gx_ptr[j]
+					+ Jacobian[0][1] * gy_ptr[j]) / det;
+			wy[i * numberofnodeperelem + j] = (Jacobian[1][0] * gx_ptr[j]
+					+ Jacobian[1][1] * gy_ptr[j]) / det;
+		}
+	}
+
+	delete[] gx_ptr;
+	delete[] gy_ptr;
+}
 
 template class mexplus::Session<Assembler>;
 
@@ -1483,6 +1615,26 @@ MEX_DEFINE(reference2D)(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs
 
 
 }
+
+MEX_DEFINE(reference_grad) (int nlhs, mxArray* plhs[], int nrhs,
+		const mxArray* prhs[]) {
+	InputArguments input(nrhs, prhs, 2);
+	OutputArguments output(nlhs, plhs, 2);
+	Assembler* assembler = Session<Assembler>::get(input.get(0));
+
+	size_t numberofpoints = mxGetN(prhs[1]);
+
+	plhs[0] = mxCreateNumericMatrix(numberofpoints, numberofpoints,
+			mxDOUBLE_CLASS, mxREAL);
+	plhs[1] = mxCreateNumericMatrix(numberofpoints, numberofpoints,
+			mxDOUBLE_CLASS, mxREAL);
+
+	assembler->Reference(plhs[0], plhs[1], C_CAST(prhs[1]));
+
+}
+
+
+
 
 MEX_DEFINE(reference1D)(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[]){
 	InputArguments input(nrhs, prhs, 3);
@@ -1806,6 +1958,26 @@ MEX_DEFINE(assemlon)(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[])
 			C_CAST(prhs[6]), C_CAST(prhs[7]), C_CAST(prhs[8]),
 			C_CAST(prhs[9]), C_CAST(prhs[10]));
 
+}
+
+MEX_DEFINE(grad) (int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[]) {
+	InputArguments input(nrhs, prhs, 6);
+	OutputArguments output(nlhs, plhs, 2);
+	Assembler* assembler = Session<Assembler>::get(input.get(0));
+
+	size_t numberofelem = mxGetN(prhs[3]);
+	size_t numberofnodesperelem = mxGetM(prhs[3]);
+
+	plhs[0] = mxCreateNumericMatrix(numberofnodesperelem, numberofelem,
+			mxDOUBLE_CLASS, mxREAL);
+	plhs[1] = mxCreateNumericMatrix(numberofnodesperelem, numberofelem,
+			mxDOUBLE_CLASS, mxREAL);
+
+	double* gx_ptr = mxGetPr(plhs[0]);
+	double* gy_ptr = mxGetPr(plhs[1]);
+
+	assembler->CalculateGrad(gx_ptr, gy_ptr, C_CAST(prhs[1]), C_CAST(prhs[2]),
+			C_CAST(prhs[3]), C_CAST(prhs[4]), C_CAST(prhs[5]));
 }
 
 }
