@@ -49,14 +49,18 @@ classdef femm < handle
             [obj.edge.ref, ~] = obj.builder.reference1D(opt.deg, obj.edge.qnodes);
             
             % iniitialize mesh.
-            mesh = TriangleMesh();
-            hull = reshape(opt.edge, 2 * size(opt.edge, 2), 1);
-            idx  = circshift(reshape(repmat(0:size(opt.edge, 2)-1, 2, 1),...
-                2 * size(opt.edge, 2), 1), [-1,1]);
-            mesh.set_points_tri(hull);
-            mesh.set_facets_tri(idx);
-            mesh = mesh.build_tri(); % not ready to go
-            mesh = mesh.refine_tri(sprintf('q34.0a%f', opt.min_area));  % ready.
+            if ~isfield(opt, 'mesh')
+                mesh = TriangleMesh();
+                hull = reshape(opt.edge, 2 * size(opt.edge, 2), 1);
+                idx  = circshift(reshape(repmat(0:size(opt.edge, 2)-1, 2, 1),...
+                    2 * size(opt.edge, 2), 1), [-1,1]);
+                mesh.set_points_tri(hull);
+                mesh.set_facets_tri(idx);
+                mesh = mesh.build_tri(); % not ready to go
+                mesh = mesh.refine_tri(sprintf('q34.0a%f', opt.min_area));  % ready.
+            else
+                mesh = opt.mesh;
+            end
 
             %% Function Space
             if (isfield(opt, 'kway') && opt.kway > 1)
