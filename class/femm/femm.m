@@ -12,9 +12,11 @@ classdef femm < handle
     
     methods
         function obj = femm(opt)
-            assert(isfield(opt, 'edge'));
-            assert(size(opt.edge, 1) == 2);
-            assert(isfield(opt, 'min_area'));
+            if ~isfield(opt, 'mesh')
+                assert(isfield(opt, 'edge'));
+                assert(size(opt.edge, 1) == 2);
+                assert(isfield(opt, 'min_area'));
+            end
             if isfield(opt, 'qdeg')
                 d = max(opt.deg * 2, opt.qdeg);
             else
