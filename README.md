@@ -14,6 +14,7 @@ libraries needed: ``trianlge``, ``metis``(5.x).
 
 - ``apt-get install libtriangle-dev``
 - ``apt-get install libmetis-dev``
+- ``apt-get install liblapack-dev libblas-dev``
 
 # Build
 - ``make`` 
